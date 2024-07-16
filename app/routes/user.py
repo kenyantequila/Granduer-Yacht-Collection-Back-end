@@ -1,7 +1,8 @@
-# User Blueprint
 from flask import Blueprint
 from flask_restful import Resource, Api, reqparse
 from models import db,  User
+from flask_cors import CORS
+
 
 from flask_cors import CORS
 users_bp = Blueprint('users', __name__, url_prefix='/users')
@@ -47,3 +48,5 @@ class UserList(Resource):
         return {'message': 'User successfully created'}
 
 api_users.add_resource(UserList, '/userlist')
+
+CORS(users_bp)

@@ -2,6 +2,8 @@
 from flask import Blueprint
 from flask_restful import Resource, Api, reqparse
 from models import db,  Booking
+from flask_cors import CORS
+
 
 from flask_cors import CORS
 bookings_bp = Blueprint('bookings', __name__, url_prefix='/bookings')
@@ -49,3 +51,5 @@ class BookingList(Resource):
         return {'message': 'Booking successfully created'}
 
 api_bookings.add_resource(BookingList, '/bookinglist')
+
+CORS(bookings_bp)
