@@ -16,6 +16,8 @@ app.register_blueprint(bookings_bp)
 app.register_blueprint(users_bp)
 
 
+
+
 db.init_app(app)
 migrate = Migrate(app=app, db=db)
 
