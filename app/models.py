@@ -41,4 +41,4 @@ class Booking(db.Model):
     status = db.Column(db.String(20), nullable=False, default='pending')
 
     def __repr__(self):
-        return f"Booking('{self.yacht.name}', {self.start_date}, {self.end_date}, '{self.status}')"
+        return f"Booking('{self.yacht.first_name}', {self.start_date.strftime('%Y-%m-%d')}, {self.end_date.strftime('%Y-%m-%d')}, '{self.status}')"
