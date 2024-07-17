@@ -1,7 +1,7 @@
 # Yacht Blueprint
 from flask import Blueprint
 from flask_restful import Resource, Api, reqparse
-from models import db,  Yacht
+from models import db,  Yacht,Booking
 from flask_cors import CORS
 
 
@@ -54,4 +54,11 @@ class YachtList(Resource):
 
 api_yachts.add_resource(YachtList, '/yachtlist')
 
-CORS(yachts_bp)
+
+class yachtbookingResource(Resource):
+    def get(self, yacht_id):
+        bookings = Booking.query.filter_by(yacht_id=yacht_id).all()
+        return [{'id': booking.id, 'user_id': booking.user_id,'start_date': booking.start_date, 'end_date': booking.end_date,'status': booking.status} for booking in bookings]
+
+
+api_yachts.add_resource(yachtbookingResource,'/bookings')

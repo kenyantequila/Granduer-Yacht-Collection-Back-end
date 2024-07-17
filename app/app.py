@@ -2,6 +2,8 @@ from flask import Flask
 from flask_migrate import Migrate
 from models import db
 from routes.yacht import yachts_bp
+from routes.bookings import bookings_bp
+from routes.user import users_bp
 
 
 app= Flask(__name__)
@@ -10,6 +12,8 @@ app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///granduer_yacht_collection.db'
 # create database called jobs
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.register_blueprint(yachts_bp)
+app.register_blueprint(bookings_bp)
+app.register_blueprint(users_bp)
 
 
 db.init_app(app)
