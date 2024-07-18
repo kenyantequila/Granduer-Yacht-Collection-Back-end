@@ -1,23 +1,15 @@
-from flask import Flask
-from flask_sqlalchemy import SQLAlchemy
-from sqlalchemy import MetaData
-
-
-metadata = MetaData(naming_convention={
-    "fk": "fk_%(table_name)s_%(column_0_name)s_%(referred_table_name)s",
-})
-
-db = SQLAlchemy( metadata=metadata)
+from app import db, bcrypt
 
 class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    username = db.Column(db.String(100), nullable=False, unique=True)
-    email = db.Column(db.String(120), nullable=False, unique=True)
-    password = db.Column(db.String(100), nullable=False)
+    username = db.Column(db.String(80), unique=True, nullable=False)
+    email = db.Column(db.String(120), unique=True, nullable=False)
+    password = db.Column(db.String(200), nullable=False)
 
-    def __repr__(self):
-        return f"User('{self.username}', '{self.email}')"
-    
+    def __init__(self, username, email, password):
+        self.username = username
+        self.email = email
+        self.password = bcrypt.generate_password_hash(password).decode('utf-8')
 
 class Yacht(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -25,12 +17,7 @@ class Yacht(db.Model):
     description = db.Column(db.String(200), nullable=False)
     capacity = db.Column(db.Integer, nullable=False)
     price = db.Column(db.Float, nullable=False)
-    image = db.Column(db.String(200), nullable=False)  # New column for image URL
-
-    
-    def __repr__(self):
-        return f"Yacht('{self.name}', '{self.description}', {self.capacity}, {self.price})"
-
+    image = db.Column(db.String(200), nullable=False)
 
 class Booking(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -40,5 +27,11 @@ class Booking(db.Model):
     end_date = db.Column(db.DateTime, nullable=False)
     status = db.Column(db.String(20), nullable=False, default='pending')
 
-    def __repr__(self):
-        return f"Booking('{self.yacht.first_name}', {self.start_date.strftime('%Y-%m-%d')}, {self.end_date.strftime('%Y-%m-%d')}, '{self.status}')"
+class Admin(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    username = db.Column(db.String(80), unique=True, nullable=False)
+    password = db.Column(db.String(200), nullable=False)
+
+    def __init__(self, username, password):
+        self.username = username
+        self.password = bcrypt.generate_password_hash(password).decode('utf-8')
