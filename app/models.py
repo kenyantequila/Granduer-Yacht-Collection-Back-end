@@ -21,7 +21,7 @@ class Yacht(db.Model):
 
 class Booking(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    yacht_id = db.Column(db.Integer, db.ForeignKey('yacht.id'), nullable=False)
+    yacht_id = db.Column(db.Integer, db.ForeignKey('yacht.id', ondelete='CASCADE'), nullable=False)
     yacht = db.relationship('Yacht', backref=db.backref('bookings', lazy=True))
     start_date = db.Column(db.DateTime, nullable=False)
     end_date = db.Column(db.DateTime, nullable=False)

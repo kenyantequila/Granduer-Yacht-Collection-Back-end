@@ -1,5 +1,5 @@
 import sys
-from app import app, db, register_admin
+from app import app,  register_admin
 
 if len(sys.argv) != 3:
     print("Usage: python register_admin.py <username> <password>")

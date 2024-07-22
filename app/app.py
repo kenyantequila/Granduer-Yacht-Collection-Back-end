@@ -39,23 +39,15 @@ class Yacht(db.Model):
     capacity = db.Column(db.Integer, nullable=False)
     price = db.Column(db.Float, nullable=False)
     image = db.Column(db.String(200), nullable=False)
+    bookings = db.relationship('Booking', backref='yacht', cascade='all, delete-orphan')
 
-    def __repr__(self):
-        return f"Yacht('{self.name}', '{self.description}', {self.capacity}, {self.price})"
-    
 class Booking(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     yacht_id = db.Column(db.Integer, db.ForeignKey('yacht.id'), nullable=False)
-    yacht = db.relationship('Yacht', backref=db.backref('bookings', lazy=True))
     num_tickets = db.Column(db.Integer, nullable=False)
     num_days = db.Column(db.Integer, nullable=False)
     total_price = db.Column(db.Float, nullable=False)
-    booking_date = db.Column(db.DateTime, default= datetime.utcnow)
 
-class YachtResource(Resource):
-    def get(self):
-        yachts = Yacht.query.all()
-        return [{'id': yacht.id, 'name': yacht.name, 'description': yacht.description, 'capacity': yacht.capacity, 'price': yacht.price, 'image': yacht.image} for yacht in yachts]
 
 class Admin(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -187,12 +179,25 @@ class YachtResource(Resource):
         return {'message': 'Yacht updated successfully'}
 
     def delete(self, yacht_id):
-        yacht = Yacht.query.get_or_404(yacht_id)
-        db.session.delete(yacht)
-        db.session.commit()
-        return {'message': 'Yacht deleted successfully'}
+        try:
+            print(f"Attempting to delete yacht with ID: {yacht_id}")  # Debug print
+            yacht = Yacht.query.get_or_404(yacht_id)
+            
+            # Delete associated bookings
+            Booking.query.filter_by(yacht_id=yacht_id).delete()
+            
+            db.session.delete(yacht)
+            db.session.commit()
+            return {'message': 'Yacht deleted successfully'}
+        except Exception as e:
+            db.session.rollback()
+            print(f"Error occurred: {e}")  # Debug print
+            return {'message': str(e)}, 500
 
 api.add_resource(YachtResource, '/yachts', '/yachts/<int:yacht_id>')
+
+
+
 class YachtBookingsResource(Resource):
     def get(self, yacht_id):
         bookings = Booking.query.filter_by(yacht_id=yacht_id).all()

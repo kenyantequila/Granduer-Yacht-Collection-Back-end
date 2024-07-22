@@ -19,8 +19,15 @@ CORS(yachts_bp)
 class YachtResource(Resource):
     def get(self, id):
         yacht = Yacht.query.get_or_404(id)
-        return {'id': yacht.id, 'name': yacht.name, 'description': yacht.description, 'capacity': yacht.capacity, 'price': yacht.price, 'image': yacht.image}
-    
+        return {
+            'id': yacht.id,
+            'name': yacht.name,
+            'description': yacht.description,
+            'capacity': yacht.capacity,
+            'price': yacht.price,
+            'image': yacht.image
+        }
+
     def put(self, id):
         data = yacht_parser.parse_args()
         yacht = Yacht.query.get_or_404(id)
@@ -30,13 +37,24 @@ class YachtResource(Resource):
         yacht.price = data['price']
         yacht.image = data['image']
         db.session.commit()
-        return {'id': yacht.id, 'name': yacht.name, 'description': yacht.description, 'capacity': yacht.capacity, 'price': yacht.price, 'image': yacht.image}
-    
+        return {
+            'id': yacht.id,
+            'name': yacht.name,
+            'description': yacht.description,
+            'capacity': yacht.capacity,
+            'price': yacht.price,
+            'image': yacht.image
+        }
+
     def delete(self, id):
-        yacht = Yacht.query.get_or_404(id)
-        db.session.delete(yacht)
-        db.session.commit()
-        return {'message': 'Yacht deleted successfully'}
+        try:
+            yacht = Yacht.query.get_or_404(id)
+            db.session.delete(yacht)
+            db.session.commit()
+            return {'message': 'Yacht deleted successfully'}
+        except Exception as e:
+            db.session.rollback()
+            return {'message': 'Failed to delete yacht', 'error': str(e)}, 500
 
 api_yachts.add_resource(YachtResource, '/<int:id>')
 
